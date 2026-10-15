@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update User Profile</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #007BFF; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #message { margin-top: 15px; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <h2>Update Profile</h2>
+    <form id="updateForm">
+        <div class="form-group">
+            <label>User ID (to update):</label>
+            <input type="number" id="userId" required placeholder="e.g., 1">
+        </div>
+        <div class="form-group">
+            <label>New Username:</label>
+            <input type="text" id="username" required>
+        </div>
+        <div class="form-group">
+            <label>New Email:</label>
+            <input type="email" id="email" required>
+        </div>
+        <button type="submit">Update in Database</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+        document.getElementById('updateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userId = document.getElementById('userId').value;
+            const payload = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value
+            };
+
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'PUT', // Using PUT because we are updating existing data
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            const msgDiv = document.getElementById('message');
+            
+            if (response.ok) {
+                msgDiv.style.color = 'green';
+                msgDiv.innerText = result.message;
+                document.getElementById('updateForm').reset();
+            } else {
+                msgDiv.style.color = 'red';
+                msgDiv.innerText = result.error || 'Failed to update.';
+            }
+        });
+    </script>
+</body>
+</html>
